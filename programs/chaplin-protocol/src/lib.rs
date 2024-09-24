@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use crate::processor::*;
 use crate::context::*;
-use crate::state::*;
+use crate::state::{Actor};
 
 pub mod processor;
 pub mod context;
@@ -11,7 +11,6 @@ declare_id!("DbNKdE3k31kCUTgNCKgiMD3CHn4MrWiuPZ2Ey4nHrPuF");
 
 #[program]
 pub mod chaplin_protocol {
-    use state::Actor;
 
     use super::*;
 
@@ -31,8 +30,16 @@ pub mod chaplin_protocol {
         processor::connect_label_to_user(ctx, label)
     }
 
-    pub fn create_film(ctx: Context<CreateFilm>, collection_mint: Pubkey, label: Pubkey, actor: state::Actor) -> Result<()> {
+    pub fn create_film(ctx: Context<CreateFilm>, collection_mint: Pubkey, label: Pubkey, actor: Actor) -> Result<()> {
         processor::create_film(ctx, collection_mint, label, actor)
+    }
+
+    pub fn connect_film_to_label(ctx: Context<ConnectFilmToLabel>, label: Pubkey, film_pda: Pubkey) -> Result<()> {
+        processor::connect_film_to_label(ctx, label, film_pda)
+    }
+
+    pub fn push_history(ctx: Context<PushHistory>, collection_mint: Pubkey) -> Result<()> {
+        processor::push_history(ctx, collection_mint)
     }
 }
 

@@ -26,7 +26,7 @@ pub struct CreateLabel<'info> {
     #[account(
         init,
         payer = user,
-        space = 8 + 32 + 32,
+        space = 8 + 32 + 32 + 4 + (32 * 5),
         seeds = [b"label", squad_key.key().as_ref()],
         bump
     )]
@@ -43,8 +43,8 @@ pub struct CreateUser<'info> {
     #[account(
         init,
         payer = user,
-        space = 8 + 200,
-        seeds = [b"user-profile", authority.key().as_ref()],
+        space = 8 + 32 + 20 + 4 + (32 * 5) + 4 + (32 * 5),
+        seeds = [b"user-profile-2", authority.key().as_ref()],
         bump
     )]
     pub user_profile: Account<'info, UserProfile>,
@@ -74,4 +74,22 @@ pub struct CreateFilm<'info> {
     )]
     pub film: Account<'info, Film>,
     pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct ConnectFilmToLabel<'info> {
+    #[account(mut)]
+    pub user: Signer<'info>,
+    #[account(mut)]
+    pub label: Account<'info, Label>,
+    #[account(mut)]
+    pub film: Account<'info, Film>
+}
+
+#[derive(Accounts)]
+pub struct PushHistory<'info> {
+    #[account(mut)]
+    pub user: Signer<'info>,
+    #[account(mut)]
+    pub user_profile: Account<'info, UserProfile>
 }

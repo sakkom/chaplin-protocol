@@ -4,14 +4,17 @@ use anchor_lang::AnchorDeserialize;
 
 #[account]
 pub struct UserProfile {
+    pub authority: Pubkey,
     pub name: String,
-    pub label: Vec<Pubkey>
+    pub label: Vec<Pubkey>,
+    pub history: Vec<Pubkey>,
 }
 
 #[account]
 pub struct Label {
     pub squad_key: Pubkey,
     pub bubblegum_tree: Pubkey, 
+    pub films: Vec<Pubkey>
 }
 
 #[account]

@@ -10,39 +10,25 @@ describe("chaplin-protocol", () => {
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(provider);
 
-  it("Creates a film with specified actor", async () => {
-    const collectionMint = anchor.web3.Keypair.generate().publicKey;
-    const label = anchor.web3.Keypair.generate().publicKey;
+  it("Pushes history and checks for duplicates", async () => {
+    const name = 'roro'
 
-    const actor = {
-      creator: [anchor.web3.Keypair.generate().publicKey, anchor.web3.Keypair.generate().publicKey],
-      coCreator: [
-        anchor.web3.Keypair.generate().publicKey,
-        anchor.web3.Keypair.generate().publicKey,
-        anchor.web3.Keypair.generate().publicKey,
-      ],
-    };
-
-    const [film] = await anchor.web3.PublicKey.findProgramAddress(
-      [Buffer.from("film"), collectionMint.toBuffer()],
+    const [userProfilePda, _] = await anchor.web3.PublicKey.findProgramAddress(
+      [Buffer.from("user-profile-2"), provider.wallet.publicKey.toBuffer()],
       program.programId
     );
 
+    // Push collectionMint to history
     await program.methods
-      .createFilm(collectionMint, label, actor)
+      .createUser(name)
       .accounts({
+        userProfile: userProfilePda,
         user: provider.wallet.publicKey,
-        collectionMint: collectionMint,
-        film: film,
-        systemProgram: anchor.web3.SystemProgram.programId,
+        authority: provider.wallet.publicKey
       })
       .rpc();
-
-    const filmAccount = await program.account.film.fetch(film);
-    console.log(filmAccount);
-    // assert.equal(filmAccount.collectionMint.toString(), collectionMint.toString());
-    // assert.equal(filmAccount.label.toString(), label.toString());
-    // assert.deepEqual(filmAccount.actor.creatro.map((key: anchor.web3.PublicKey) => key.toString()), actor.creatro.map((key: anchor.web3.PublicKey) => key.toString()));
-    // assert.deepEqual(filmAccount.actor.co_creator.map((key: anchor.web3.PublicKey) => key.toString()), actor.co_creator.map((key: anchor.web3.PublicKey) => key.toString()));
+    // Fetch the user profile account and check the history
+    const userProfileAccount = await program.account.userProfile.fetch(userProfilePda);
+    console.log(userProfileAccount);
   });
 });
